@@ -24,7 +24,7 @@ Route::get('/', function () {
  */
 Route::view('/', 'home');
 
-Route::get('/about', function () {
+Route::get('/abouts', function () {
     return view('about');
 });
 
@@ -54,3 +54,11 @@ Route::get('/posts/{id}/{author?}', function($myId, $myAuthor = 'default'){
         'author' => $myAuthor
     ]);
 });
+# 2 eme Methode, utilisation d'une fuction definit dans le controller
+Route::get('/post/{id}/{author?}', 'HomeController@blog');
+
+
+// ici on appel la methode definit dans le controller (HomeController.php)*
+// qui permet l'appel du view Home qui a pour but d'afficher le cotenue 
+// de la page (home.blade.php)
+Route::get('/home', 'HomeController@home');
