@@ -24,9 +24,9 @@ Route::get('/', function () {
  */
 Route::view('/', 'home');
 
-Route::get('/abouts', function () {
+Route::get('/about', function () {
     return view('about');
-});
+})->name('about');
 
 // creation d'une routes avec segement dynamic + function anonyme
 Route::get('/post/{id}', function($id){
@@ -38,7 +38,7 @@ Route::get('/post/{id}', function($id){
 # on peut rendre une parameter dans la route optional via l'utilisation
 ## du ? exp : `{author?}` et on lui donne une valeur par default
 ### dans la function anonyme
-Route::get('/posts/{id}/{author?}', function($myId, $myAuthor = 'default'){
+Route::get('/posted/{id}/{author?}', function($myId, $myAuthor = 'default'){
 
     // les donnes qu'on veut les transmetre vers la view `show.blade.php`
     $posts = [
@@ -46,7 +46,7 @@ Route::get('/posts/{id}/{author?}', function($myId, $myAuthor = 'default'){
         2 => ['title' => 'learn some thing']
     ];
     // on a posts qui est un dossier, et show le fichier
-    return view('posts.show', [
+    return view('posts.home', [
         // dans la procedure de recuperation on va utilise le nom `data`
         // on utilise la valeur id passer on parameters, pour 
         // recuperer seulement les information demander par le lien
@@ -61,4 +61,22 @@ Route::get('/post/{id}/{author?}', 'HomeController@blog');
 // ici on appel la methode definit dans le controller (HomeController.php)*
 // qui permet l'appel du view Home qui a pour but d'afficher le cotenue 
 // de la page (home.blade.php)
-Route::get('/home', 'HomeController@home');
+Route::get('/home', 'HomeController@home')->name('home');
+
+// gennere les 7 routess pour PostController
+Route::resource('/posts', 'PostController');
+
+// gennere only 2 routes (index, show) pour PostController
+Route::resource('/posts2', 'PostController')->only(['index', 'show', 
+        'create', 'store']);
+
+
+// gennere all routes sauf (destroy) pour PostController
+Route::resource('/posts3', 'PostController')->except(['destroy']);
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
