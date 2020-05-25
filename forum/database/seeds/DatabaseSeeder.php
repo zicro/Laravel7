@@ -12,5 +12,22 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // $this->call(UserSeeder::class);
+        // generate 10 users
+       $users = factory(App\User::class, 10)->create();
+
+       // generer 300 post
+       // et on boucle sur chaque post on lui affectant un User_id
+       $posts = factory(App\Post::class, 50)->make()->each(function($post) use($users){
+           $post->user_id = $users->random()->id;
+           $post->save();
+       });
+
+       // generer 1000 Comments
+       // et on boucle sur chaque Comment on lui affectant un post_id
+
+       factory(App\Comment::class, 150)->make()->each(function($comment) use($posts){
+           $comment->post_id = $posts->random()->id;
+           $comment->save();
+       });
     }
 }

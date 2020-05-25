@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        //$this->middleware('auth')->only(['create', 'edit', 'destroy']);
+        $this->middleware('auth')->except(['index', 'show', 'all', 'archive']);
+
+    }
     /**
      * Display a listing of the resource.
      *
@@ -18,12 +24,45 @@ class PostController extends Controller
     public function index()
     {
         // recuperer la liste des posts avec le count des parameters :
-        $posts = Post::withCount('comments')->get();
+       $posts = Post::withCount('comments')->orderBy('updated_at', 'desc')->get();
 
         # faire passer les donnes depuis le controller
         # vers la vue a l'aide d'une array []
         return view('posts.index', [
-            'posts' =>  $posts
+            'posts' =>  $posts,
+            'tab' => 'list'
+        ]);
+    }
+
+    // get the list of SofDeleted Posts : 
+
+    public function archive()
+    {
+        // recuperer la liste des posts qui seront supprimer
+        // avec le count des parameters :
+        $posts = Post::onlyTrashed()->withCount('comments')->orderBy('updated_at', 'desc')->get();
+
+        # faire passer les donnes depuis le controller
+        # vers la vue a l'aide d'une array []
+        return view('posts.index', [
+            'posts' =>  $posts,
+            'tab'=> 'archive'
+        ]);
+    }
+
+    // get lists of all posts, with SoftDeleted Posts : 
+
+    public function all()
+    {
+        // recuperer la liste des posts qui sont supprimer 
+        // + les posts qui ne sont pas supprimer avec le count des parameters :
+        $posts = Post::withTrashed()->withCount('comments')->orderBy('updated_at', 'desc')->get();
+
+        # faire passer les donnes depuis le controller
+        # vers la vue a l'aide d'une array []
+        return view('posts.index', [
+            'posts' =>  $posts,
+            'tab'=>'all'
         ]);
     }
 
@@ -92,7 +131,8 @@ class PostController extends Controller
         //dd(\App\Post::find($id));
 
         return view('posts.show', [
-            'post' => Post::findOrFail($id)
+            'post' => Post::with('comments')->findOrFail($id),
+            
         ]);
     }
 
@@ -139,6 +179,19 @@ class PostController extends Controller
 
     }
 
+    public function restore(Request $request, $id){
+
+        // from la liste des posts supprimer, on restore
+        // the one who's ID is in Pamars
+        $post = Post::onlyTrashed()->whereId($id);
+        $post->restore();
+        
+
+        $request->session()->flash('status', 'Restored Success !!');
+        return redirect()->back();
+         
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -156,6 +209,17 @@ class PostController extends Controller
         Post::destroy($id);
 
         $request->session()->flash('status', 'Deleted Success !!');
-        return redirect(route('posts.index'));
+        return redirect()->back();
+    }
+
+    public function idelete(Request $request, $id){
+        // supprimer le post physiquement
+        // operarion irreversible
+        // on ne peut pas la recupere par la suite...
+        $post = Post::onlyTrashed()->where('id', $id)->first();
+        $post->forceDelete();
+
+        $request->session()->flash('status', 'Dropped Success !!');
+        return redirect()->back();
     }
 }

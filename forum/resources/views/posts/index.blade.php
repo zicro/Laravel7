@@ -1,6 +1,15 @@
-@extends('layout')
+@extends('layouts.app')
 
 @section('content')
+
+<nav class="nav nav-tabs nav-stacked my-5">
+    <a class="nav-link  @if ($tab == 'list') active @endif " href="/posts">List</a>
+    <a class="nav-link  @if ($tab == 'archive') active @endif" href="/posts/archive">Archive</a>
+    <a class="nav-link  @if ($tab == 'all') active @endif" href="/posts/all">All</a>
+</nav>
+
+<h2 style="color:#ccc;" class="text-center">Nombre de Posts : {{ $posts->count() }}</h2>
+
 <h3>Post list : </h3>
     <ul class="list-group">    
         @forelse ($posts as $post)
@@ -24,13 +33,29 @@
        </span>
     <em>{{$post->created_at->diffForHumans()}}</em>
     <a class="btn btn-primary" href="{{ route('posts.edit', ['post' => $post->id]) }}" >edit</a>
-    
+    @if ($post->deleted_at)
+    <form style="display:inline;" action="{{url('/posts/'.$post->id.'/restore')}}" method="POST">
+        @csrf
+        @method('PATCH')
+            <button type="submit" class="btn btn-success">
+                restore</button>
+        </form>
+
+        <form style="display:inline;" action="{{url('/posts/'.$post->id.'/forcedelete')}}" method="POST">
+            @csrf
+            @method('DELETE')
+                <button type="submit" class="btn btn-warning">
+                    !Delete</button>
+            </form>
+    @else
     <form style="display:inline;" action="{{route('posts.destroy', ['post' => $post->id])}}" method="POST">
         @csrf
         @method('DELETE')
-            <button type="submit" class="btn btn-danger" btn-lg btn-block">
+            <button type="submit" class="btn btn-danger">
                 Delete</button>
         </form>
+    @endif
+   
     </li>
     
 

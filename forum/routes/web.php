@@ -29,7 +29,7 @@ Route::get('/about', function () {
 })->name('about');
 
 // creation d'une routes avec segement dynamic + function anonyme
-Route::get('/post/{id}', function($id){
+Route::get('/blog/{id}', function($id){
     return $id;
 });
 
@@ -38,7 +38,7 @@ Route::get('/post/{id}', function($id){
 # on peut rendre une parameter dans la route optional via l'utilisation
 ## du ? exp : `{author?}` et on lui donne une valeur par default
 ### dans la function anonyme
-Route::get('/posted/{id}/{author?}', function($myId, $myAuthor = 'default'){
+Route::get('/blogs/{id}/{author?}', function($myId, $myAuthor = 'default'){
 
     // les donnes qu'on veut les transmetre vers la view `show.blade.php`
     $posts = [
@@ -55,7 +55,7 @@ Route::get('/posted/{id}/{author?}', function($myId, $myAuthor = 'default'){
     ]);
 });
 # 2 eme Methode, utilisation d'une fuction definit dans le controller
-Route::get('/post/{id}/{author?}', 'HomeController@blog');
+Route::get('/blog/{id}/{author?}', 'HomeController@blog');
 
 
 // ici on appel la methode definit dans le controller (HomeController.php)*
@@ -63,20 +63,34 @@ Route::get('/post/{id}/{author?}', 'HomeController@blog');
 // de la page (home.blade.php)
 Route::get('/home', 'HomeController@home')->name('home');
 
-// gennere les 7 routess pour PostController
-Route::resource('/posts', 'PostController');
+
 
 // gennere only 2 routes (index, show) pour PostController
-Route::resource('/posts2', 'PostController')->only(['index', 'show', 
-        'create', 'store']);
+//Route::resource('/posts2', 'PostController')->only(['index', 'show', 'create', 'store']);
 
 
 // gennere all routes sauf (destroy) pour PostController
-Route::resource('/posts3', 'PostController')->except(['destroy']);
+//Route::resource('/posts3', 'PostController')->except(['destroy']);
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Auth::routes();
+// gennere les 7 routess pour PostController
+//Route::resource('/posts', 'PostController')->middleware('auth');
+//Route::get('/home', 'HomeController@index')->name('home');
 
-Route::get('/home', 'HomeController@index')->name('home');
+
+
+// il faut les ajouter en haut de Resources pour qu'il sa marche
+Route::get('/posts/archive', 'PostController@archive');
+Route::get('/posts/all', 'PostController@all');
+Route::patch('/posts/{id}/restore', 'PostController@restore');
+Route::delete('/posts/{id}/forcedelete', 'PostController@idelete');
+
+
+// gennere les 7 routess pour PostController
+Route::resource('/posts', 'PostController');
+
+
+//Route::get('/post/', 'PostController@index')->name('post');
+
