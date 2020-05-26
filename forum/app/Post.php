@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Scopes\LatestScope;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -14,19 +15,23 @@ class Post extends Model
 
 
     // on specifier les champs qui vont être inserer dans la BDD
-protected $fillable = ['title', 'content', 'slug', 'active'];
+protected $fillable = ['title', 'content', 'slug', 'active', 'user_id'];
 
 public function comments(){
-    return $this->hasMany('App\Comment');
+    // dernier() : c'est un scoop qui est definie au niveau
+    // du Model `Comment` sous le nom scopeDernier()
+    return $this->hasMany('App\Comment')->dernier();
 }
 
 public function user(){
-    // chaque post apartient a un seul utilisateur
     return $this->belongsTo(User::class);
 }
 
 public static function boot(){
     parent::boot();
+
+    // on ajoute le scoop qui va etre executer automatiquement
+    static::addGlobalScope(new LatestScope);
 
     static::deleting(function (Post $post){
         // lors du lancement de la request delete, on supprimer d'abord les
@@ -34,14 +39,14 @@ public static function boot(){
         # on utilise la function comments() pour avoir les commentaire
         # liee au Current post 
         // if we use onDeleteCascade we don't use this Code
-        //$post->comments()->delete();
+        $post->comments()->delete();
     });
 
     // on utilise La MEthode restoring(), pour restorer les Commentaires
     // aussi avec les posts : 
 
     static::restoring(function (Post $post) {
-        $post->comment()->restore();
+        $post->comments()->restore();
     });
 }
 

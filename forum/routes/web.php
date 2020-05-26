@@ -74,6 +74,9 @@ Route::get('/home', 'HomeController@home')->name('home');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/secret', 'HomeController@secret')
+        ->name('secret')
+        ->middleware('can:secret.page');
 
 // gennere les 7 routess pour PostController
 //Route::resource('/posts', 'PostController')->middleware('auth');

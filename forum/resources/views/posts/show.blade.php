@@ -20,7 +20,7 @@
 
 <div class="list-group-item">
 <p>{{$comment->content}}</p>
-<em>{{$comment->created_at}}</em>
+<em>{{$comment->updated_at}}</em>
 </div>
 @endforeach
 

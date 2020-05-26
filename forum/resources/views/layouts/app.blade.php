@@ -42,7 +42,13 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('posts.create') }}">New Post</a>
-                        </li>     
+                        </li>
+                        
+                        @can('secret.page')
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('secret') }}"><span class="badge badge-warning">Admin Zone</span></a>
+                        </li>  
+                        @endcan
                     </ul>
 
                     <!-- Right Side Of Navbar -->

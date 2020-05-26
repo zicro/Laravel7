@@ -13,6 +13,7 @@ $factory->define(Post::class, function (Faker $faker) {
         'slug' => Str::slug($title ,'-'),
         'content' => $faker->text(),
         'active' => $faker->boolean,
+		'updated_at' => $faker->dateTimeBetween(' -3 years')
 
     ];
 });

@@ -19,6 +19,11 @@
             <a class="nav-item nav-link" href="{{ route('about') }}">about</a>
             <a class="nav-item nav-link" href="{{ route('posts.index') }}">List Post</a>
             <a class="nav-item nav-link" href="{{ route('posts.create') }}">New Post</a>
+            
+            
+            <a class="nav-item nav-link" href="{{ route('posts.secret') }}">Administration</a>    
+           
+            
         </div>
     </nav>
     <div class="container">

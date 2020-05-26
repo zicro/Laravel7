@@ -31,29 +31,48 @@
         {{$post->comments_count}} Comments   
         @endif
        </span>
-    <em>{{$post->created_at->diffForHumans()}}</em>
+    <em>{{$post->updated_at->diffForHumans()}}, by {{ $post->user->name }}</em>
+    <br >
+
+    @cannot('delete', $post)
+        <span class="badge badge-dark">you can't Delete it ...</span>
+    @endcannot
+
+    
+    @can('update', $post)
     <a class="btn btn-primary" href="{{ route('posts.edit', ['post' => $post->id]) }}" >edit</a>
+    @endcan
+
     @if ($post->deleted_at)
+
+    @can('restore', $post)
     <form style="display:inline;" action="{{url('/posts/'.$post->id.'/restore')}}" method="POST">
         @csrf
         @method('PATCH')
             <button type="submit" class="btn btn-success">
                 restore</button>
         </form>
-
+    @endcan
+            
+        @can('forceDelete', $post)
         <form style="display:inline;" action="{{url('/posts/'.$post->id.'/forcedelete')}}" method="POST">
             @csrf
             @method('DELETE')
                 <button type="submit" class="btn btn-warning">
                     !Delete</button>
             </form>
+            @endcan
     @else
+
+    @can('delete', $post)
     <form style="display:inline;" action="{{route('posts.destroy', ['post' => $post->id])}}" method="POST">
         @csrf
         @method('DELETE')
             <button type="submit" class="btn btn-danger">
                 Delete</button>
         </form>
+        @endcan
+
     @endif
    
     </li>
