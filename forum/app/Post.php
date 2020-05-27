@@ -2,7 +2,9 @@
 
 namespace App;
 
+use App\Scopes\AdminShowDeleteScope;
 use App\Scopes\LatestScope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -27,9 +29,23 @@ public function user(){
     return $this->belongsTo(User::class);
 }
 
-public static function boot(){
-    parent::boot();
+ // C'est un scoop Local qui met on ordre les posts selon leur nombre
+ // de comments.
+ public function scopeMostCommented(Builder $query){
+    return $query->withCount('comments')->orderBy('comments_count', 'desc');
+}
 
+
+
+
+public static function boot(){
+    
+
+    // on ajoute le scoop qui va etre executer automatiquement
+    static::addGlobalScope(new AdminShowDeleteScope);
+
+    parent::boot();
+    
     // on ajoute le scoop qui va etre executer automatiquement
     static::addGlobalScope(new LatestScope);
 

@@ -6,6 +6,7 @@ use App\Http\Requests\StorePost;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Post;
+use App\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -26,11 +27,17 @@ class PostController extends Controller
     {
         // recuperer la liste des posts avec le count des parameters :
        $posts = Post::withCount('comments')->get();
+       $top5Posts = Post::mostCommented()->take(5)->get();
+       $topUsersPost = User::topUsersPost()->take(5)->get();
+       $userMonthly = User::activeUserinLastMonth()->take(5)->get();
 
         # faire passer les donnes depuis le controller
         # vers la vue a l'aide d'une array []
         return view('posts.index', [
             'posts' =>  $posts,
+            'mostCommented'=> $top5Posts,
+            'topUsersPost'=> $topUsersPost,
+            'userMonthly'=> $userMonthly,
             'tab' => 'list'
         ]);
     }
@@ -58,6 +65,7 @@ class PostController extends Controller
         // recuperer la liste des posts qui sont supprimer 
         // + les posts qui ne sont pas supprimer avec le count des parameters :
         $posts = Post::withTrashed()->withCount('comments')->get();
+
 
         # faire passer les donnes depuis le controller
         # vers la vue a l'aide d'une array []
