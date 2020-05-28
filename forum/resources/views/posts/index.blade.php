@@ -12,6 +12,14 @@
             <ul class="list-group">    
                 @forelse ($posts as $post)
             <li class="list-group-item">
+
+                @if ($post->created_at->diffInHours() < 1)                    
+                   <x-badge type="success"> New </x-badge>
+                @else
+                   <x-badge type="warning"> Old </x-badge>
+                @endif
+
+
                 {{-- l'ecriture : {{route('posts.show', ['post' => $post->id])}} 
                 ( avec post le nom de parameters et $post->id sa valeur)
                 est egale a posts/$post->id --}}
@@ -35,7 +43,7 @@
                 {{$post->comments_count}} Comments   
                 @endif
                </span>
-            <em>{{$post->updated_at->diffForHumans()}}, by {{ $post->user->name }}</em>
+            <x-updated :date="$post->updated_at" :name="$post->user->name"></x-updated>
             <br >
         
             @cannot('delete', $post)
@@ -89,23 +97,20 @@
             </ul>
     </div>
     <div class="col-4" style="margin-top: 6em;">
-        <div class="card">
-            
-            <div class="card-body">
-                <h4 class="card-title">Top 5 Commented Post : </h4>
-                
-            </div>
-            <ul class="list-group list-group-flush">
-                @foreach ($mostCommented as $post)
-                <li class="list-group-item">
-                <a href="{{ route('posts.show', ['post'=> $post->id]) }}">{{ $post->title }}</a>
-                <span class="badge badge-success">{{ $post->comments_count }}</span>
-            </li>
+       <x-card 
+       title="top 5 posts : " 
+       :items="collect($mostCommented)->pluck('title')">
+        </x-card>
 
-                @endforeach
-                
-            </ul>
-        </div>
+        <x-card 
+       title="top 5 Users : " 
+       :items="collect($topUsersPost)->pluck('name')">
+        </x-card>
+
+        <x-card 
+       title="top 5 Users of the Month : " 
+       :items="collect($userMonthly)->pluck('name')">
+        </x-card>
 
         <div class="card mt-4">
             

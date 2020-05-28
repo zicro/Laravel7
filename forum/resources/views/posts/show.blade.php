@@ -3,7 +3,9 @@
 @section('content')
 <h3>{{ $post->title }} </h3>
 <p>{{$post->content}}</p>
-    <em>{{$post->created_at}}</em>
+    
+
+<x-updated :date="$post->updated_at" :name="$post->user->name"></x-updated>
 <span>
     @if ($post->active)
     <span class="badge badge-success">active</span>
