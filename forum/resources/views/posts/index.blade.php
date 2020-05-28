@@ -46,6 +46,7 @@
             <x-updated :date="$post->updated_at" :name="$post->user->name"></x-updated>
             <br >
         
+        @auth
             @cannot('delete', $post)
                 <span class="badge badge-dark">you can't Delete it ...</span>
             @endcannot
@@ -86,7 +87,8 @@
                 @endcan
         
             @endif
-           
+        @endauth
+   
             </li>
             
         
@@ -97,58 +99,30 @@
             </ul>
     </div>
     <div class="col-4" style="margin-top: 6em;">
-       <x-card 
-       title="top 5 posts : " 
-       :items="collect($mostCommented)->pluck('title')">
-        </x-card>
-
-        <x-card 
-       title="top 5 Users : " 
-       :items="collect($topUsersPost)->pluck('name')">
-        </x-card>
-
-        <x-card 
-       title="top 5 Users of the Month : " 
-       :items="collect($userMonthly)->pluck('name')">
-        </x-card>
-
-        <div class="card mt-4">
-            
-            <div class="card-body">
-                <h4 class="card-title">Top 5 Users By Post : </h4>
-                
-            </div>
-            <ul class="list-group list-group-flush">
-                @foreach ($topUsersPost as $user)
+      {{-- permet d'utiliser le Componenet (card) on retournant
+      la liste des top 5 post, dans cette cas on a passer les donnes
+      via le $slot --}}
+        <x-card title="top 5 posts : ">
+            @foreach ($mostCommented as $post)
                 <li class="list-group-item">
-                {{ $user->name }}
-                <span class="badge badge-success">{{ $user->post_count }}</span>
+                <a href="{{ route('posts.show', ['post'=> $post->id]) }}">{{ $post->title }}</a>
+                <span class="badge badge-success">{{ $post->comments_count }}</span>
             </li>
 
                 @endforeach
-                
-            </ul>
-        </div>
-
-
-        <div class="card mt-4">
-            
-            <div class="card-body">
-                <h4 class="card-title">Top 5 Users Last month : </h4>
-                
-            </div>
-            <ul class="list-group list-group-flush">
-                @foreach ($userMonthly as $user)
-                <li class="list-group-item">
-                {{ $user->name }}
-                <span class="badge badge-success">{{ $user->post_count }}</span>
-            </li>
-
-                @endforeach
-                
-            </ul>
-        </div>
-
+         </x-card>
+         {{-- permet d'utiliser le Componenet (card) on retournant la liste
+         des Top 5 users via nember of posts --}}
+         <x-card 
+        title="top 5 Users : " 
+        :items="collect($topUsersPost)->pluck('name')">
+         </x-card>
+         {{-- permet d'utiliser le Componenet (card) on retournant la liste
+         des Top 5 users of the month --}}
+         <x-card 
+        title="top 5 Users of the Month : " 
+        :items="collect($userMonthly)->pluck('name')">
+         </x-card>
 
     </div>
 </div>

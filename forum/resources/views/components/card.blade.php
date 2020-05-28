@@ -5,10 +5,15 @@
         
     </div>
     <ul class="list-group list-group-flush">
-        @foreach ($items as $item)
-        <li class="list-group-item">
-            {{ $item }}
-        </li>
-        @endforeach
+        @if (empty(trim($slot)))
+            @foreach ($items as $item)
+            <li class="list-group-item">
+                {{ $item }}
+            </li>
+            @endforeach
+        @else
+            {{$slot}}
+        @endif
+        
     </ul>
 </div>

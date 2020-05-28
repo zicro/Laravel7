@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Post;
 use App\User;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -25,16 +26,30 @@ class PostController extends Controller
      */
     public function index()
     {
-        // recuperer la liste des posts avec le count des parameters :
-       $posts = Post::withCount('comments')->get();
-       $top5Posts = Post::mostCommented()->take(5)->get();
-       $topUsersPost = User::topUsersPost()->take(5)->get();
-       $userMonthly = User::activeUserinLastMonth()->take(5)->get();
+        // create cache for top5Posts, 
+        // on va cree un key with name [top5Posts] qui va stocker les donnes
+        // now()->addSeconds(10) : pendant 10 seconds
+        $postList = Cache::remember('postList', now()->addSeconds(90), function(){
+            return Post::withCount('comments')->with('user')->get();
+        });
+        $top5Posts = Cache::remember('top5Posts', now()->addMinutes(20), function(){
+            return Post::mostCommented()->take(5)->get();
+        });
+
+        $topUsersPost = Cache::remember('topUsersPost', now()->addMinutes(20), function(){
+            return User::topUsersPost()->take(5)->get();
+        });
+
+
+        $userMonthly = Cache::remember('userMonthly', now()->addMinutes(90), function(){
+            return User::activeUserinLastMonth()->take(5)->get();
+        });
+
 
         # faire passer les donnes depuis le controller
         # vers la vue a l'aide d'une array []
         return view('posts.index', [
-            'posts' =>  $posts,
+            'posts' =>  $postList,
             'mostCommented'=> $top5Posts,
             'topUsersPost'=> $topUsersPost,
             'userMonthly'=> $userMonthly,
@@ -138,11 +153,17 @@ class PostController extends Controller
      */
     public function show($id)
     {
+        
+        // utilisation du cache 
+        $postShow = Cache::remember("post-show-{$id}", 60, function() use($id){
+            return Post::with('comments')->findOrFail($id);
+        });
+        
         // on peut afficher un seule element dans le id est passer par params
         //dd(\App\Post::find($id));
 
         return view('posts.show', [
-            'post' => Post::with('comments')->findOrFail($id),
+            'post' => $postShow,
             
         ]);
     }

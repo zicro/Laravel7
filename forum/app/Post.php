@@ -7,6 +7,7 @@ use App\Scopes\LatestScope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Cache;
 
 class Post extends Model
 {
@@ -63,6 +64,14 @@ public static function boot(){
 
     static::restoring(function (Post $post) {
         $post->comments()->restore();
+    });
+
+    // au moment du modification du Post, on va supprimer le cache
+    // qui sert a afficher le cotenue du post, pour que l'affichage
+    // se recupere les donner depuis la BDD (new valeur modifier)
+    static::updating(function (Post $post) {
+        // ici on a post-show-{$id} : le nom du cache qu'on vent supprimer
+        Cache::forget("post-show-{$post->id}");
     });
 }
 
