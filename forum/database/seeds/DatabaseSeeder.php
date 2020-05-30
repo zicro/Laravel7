@@ -29,5 +29,14 @@ class DatabaseSeeder extends Seeder
            $comment->post_id = $posts->random()->id;
            $comment->save();
        });
+
+       // on faire appel au TagTableSeeder et PostTagTableSeeder
+       //  pour qu'il seront executer:
+       $this->call([
+        TagTableSeeder::class,
+        PostTagTableSeeder::class,
+       ]);
+
+       
     }
 }

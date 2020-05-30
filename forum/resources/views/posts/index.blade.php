@@ -34,6 +34,9 @@
                 </a></h3>
         
                 <p>{{$post->content}}</p>
+
+               Tags : <x-tags :tags="$post->tags"></x-tags> <br />
+
             <span class="badge badge-success">
                 @if ($post->comments_count == 0)
                     no Comment.
@@ -98,32 +101,8 @@
                 @endforelse
             </ul>
     </div>
-    <div class="col-4" style="margin-top: 6em;">
-      {{-- permet d'utiliser le Componenet (card) on retournant
-      la liste des top 5 post, dans cette cas on a passer les donnes
-      via le $slot --}}
-        <x-card title="top 5 posts : ">
-            @foreach ($mostCommented as $post)
-                <li class="list-group-item">
-                <a href="{{ route('posts.show', ['post'=> $post->id]) }}">{{ $post->title }}</a>
-                <span class="badge badge-success">{{ $post->comments_count }}</span>
-            </li>
-
-                @endforeach
-         </x-card>
-         {{-- permet d'utiliser le Componenet (card) on retournant la liste
-         des Top 5 users via nember of posts --}}
-         <x-card 
-        title="top 5 Users : " 
-        :items="collect($topUsersPost)->pluck('name')">
-         </x-card>
-         {{-- permet d'utiliser le Componenet (card) on retournant la liste
-         des Top 5 users of the month --}}
-         <x-card 
-        title="top 5 Users of the Month : " 
-        :items="collect($userMonthly)->pluck('name')">
-         </x-card>
-
+    <div class="col-4" >
+      @include('posts.sidebar')
     </div>
 </div>
 

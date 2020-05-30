@@ -5,7 +5,7 @@
         
     </div>
     <ul class="list-group list-group-flush">
-        @if (empty(trim($slot)))
+        @if (empty(trim($slot)) && !empty($items))
             @foreach ($items as $item)
             <li class="list-group-item">
                 {{ $item }}

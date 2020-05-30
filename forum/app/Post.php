@@ -30,6 +30,12 @@ public function user(){
     return $this->belongsTo(User::class);
 }
 
+// une Post Peuvent Contient Plusieurs Tags
+public function tags(){
+    //->withTimestamps() , sert a editer les champs updated_at|created_at in DB
+    return $this->belongsToMany('App\Tag')->withTimestamps();
+}
+
  // C'est un scoop Local qui met on ordre les posts selon leur nombre
  // de comments.
  public function scopeMostCommented(Builder $query){

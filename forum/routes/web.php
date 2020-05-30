@@ -90,6 +90,8 @@ Route::get('/posts/all', 'PostController@all');
 Route::patch('/posts/{id}/restore', 'PostController@restore');
 Route::delete('/posts/{id}/forcedelete', 'PostController@idelete');
 
+// create route for Tags
+Route::get('/posts/tag/{id}', 'PostTagController@index')->name('posts.tag.index');
 
 // gennere les 7 routess pour PostController
 Route::resource('/posts', 'PostController');

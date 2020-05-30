@@ -30,30 +30,30 @@ class PostController extends Controller
         // on va cree un key with name [top5Posts] qui va stocker les donnes
         // now()->addSeconds(10) : pendant 10 seconds
         $postList = Cache::remember('postList', now()->addSeconds(90), function(){
-            return Post::withCount('comments')->with('user')->get();
+            return Post::withCount('comments')->with(['user', 'tags'])->get();
         });
-        $top5Posts = Cache::remember('top5Posts', now()->addMinutes(20), function(){
-            return Post::mostCommented()->take(5)->get();
-        });
+        // $top5Posts = Cache::remember('top5Posts', now()->addMinutes(20), function(){
+        //     return Post::mostCommented()->take(5)->get();
+        // });
 
-        $topUsersPost = Cache::remember('topUsersPost', now()->addMinutes(20), function(){
-            return User::topUsersPost()->take(5)->get();
-        });
+        // $topUsersPost = Cache::remember('topUsersPost', now()->addMinutes(20), function(){
+        //     return User::topUsersPost()->take(5)->get();
+        // });
 
 
-        $userMonthly = Cache::remember('userMonthly', now()->addMinutes(90), function(){
-            return User::activeUserinLastMonth()->take(5)->get();
-        });
+        // $userMonthly = Cache::remember('userMonthly', now()->addMinutes(90), function(){
+        //     return User::activeUserinLastMonth()->take(5)->get();
+        // });
 
 
         # faire passer les donnes depuis le controller
         # vers la vue a l'aide d'une array []
         return view('posts.index', [
-            'posts' =>  $postList,
-            'mostCommented'=> $top5Posts,
-            'topUsersPost'=> $topUsersPost,
-            'userMonthly'=> $userMonthly,
-            'tab' => 'list'
+             'posts' =>  $postList,
+            // 'mostCommented'=> $top5Posts,
+            // 'topUsersPost'=> $topUsersPost,
+            // 'userMonthly'=> $userMonthly,
+            // 'tab' => 'list'
         ]);
     }
 
@@ -156,7 +156,7 @@ class PostController extends Controller
         
         // utilisation du cache 
         $postShow = Cache::remember("post-show-{$id}", 60, function() use($id){
-            return Post::with('comments')->findOrFail($id);
+            return Post::with(['comments', 'tags'])->findOrFail($id);
         });
         
         // on peut afficher un seule element dans le id est passer par params

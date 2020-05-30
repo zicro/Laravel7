@@ -1,10 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<h3>{{ $post->title }} </h3>
+
+<div class="row">
+    <div class="col-8">
+  <h3>{{ $post->title }} </h3>
 <p>{{$post->content}}</p>
     
-
+Tags : <x-tags :tags="$post->tags"></x-tags> <br />
 <x-updated :date="$post->updated_at" :name="$post->user->name"></x-updated>
 <span>
     @if ($post->active)
@@ -28,6 +31,12 @@
 
 
 @endif
+
+    </div>
+    <div class="col-4">
+        @include('posts.sidebar')
+    </div>
+</div>
 
 
 
