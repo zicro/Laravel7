@@ -4,21 +4,17 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class updated extends Component
+class errors extends Component
 {
-    public $date;
-    public $name;
-    public $userId;
+    public $color;
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($date, $name = null, $userId = null)
+    public function __construct($color = "")
     {
-        $this->date = $date;
-        $this->name = $name;
-        $this->userId = $userId;
+        $this->color = $color;
     }
 
     /**
@@ -28,6 +24,6 @@ class updated extends Component
      */
     public function render()
     {
-        return view('components.updated');
+        return view('components.errors');
     }
 }

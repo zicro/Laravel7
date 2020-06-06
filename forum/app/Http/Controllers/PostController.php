@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePost;
+use App\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Post;
@@ -10,6 +11,7 @@ use App\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -30,7 +32,7 @@ class PostController extends Controller
         // on va cree un key with name [top5Posts] qui va stocker les donnes
         // now()->addSeconds(10) : pendant 10 seconds
         $postList = Cache::remember('postList', now()->addSeconds(90), function(){
-            return Post::withCount('comments')->with(['user', 'tags'])->get();
+            return Post::postWithUserCommentsTagsImage()->get();
         });
         // $top5Posts = Cache::remember('top5Posts', now()->addMinutes(20), function(){
         //     return Post::mostCommented()->take(5)->get();
@@ -138,6 +140,33 @@ class PostController extends Controller
       
         
         $post = Post::create($data);
+     
+     // test if the picture was choosed :
+        if ($request->hasFile('picture')) {
+            // store the picture and get the link
+            $path = $request->file('picture')->store('posts');
+
+            //store picture link into DB : 
+            // on utilise cette methode de preference
+            $image = new Image([
+                'path' => $path
+            ]);
+
+            // liee l'image avec le Post,
+            # image() : la methode de liaison definit au niveau du Post Model
+            # $image : the variable that contain the Path of the Picture
+            $post->image()->save($image);
+
+            // Methode 2 : 
+            // $img = new Image();
+            // $img->path = $path;
+            // $img->post_id = $post->post_id;
+
+            // $img->save();
+
+
+        }
+
         // cree la session flash message
         $request->session()->flash('status' ,'Post was Created');
 
@@ -156,7 +185,10 @@ class PostController extends Controller
         
         // utilisation du cache 
         $postShow = Cache::remember("post-show-{$id}", 60, function() use($id){
-            return Post::with(['comments', 'tags'])->findOrFail($id);
+            // technique eager permet de recuperer le post et ces comentaire
+            // et ces tags dans la meme request
+            // 'comments.user' : permet de recuperer les donnes on mode eager
+            return Post::with(['comments', 'tags','comments.user','image'])->findOrFail($id);
         });
         
         // on peut afficher un seule element dans le id est passer par params
@@ -222,11 +254,51 @@ class PostController extends Controller
           
             $this->authorize('update', $post);
 
+            if ($request->hasFile('picture')) {
+
+                // store the picture and get the link
+                // posts : le nom du dossier qui contient les images
+                $path = $request->file('picture')->store('posts');
+                
+               
+                // on verifier si le post a modifier, contient deja une image
+                if ($post->image) {
+                    # on supprime l'ancienne image physiquement : 
+                    Storage::delete($post->image->path);
+                    # image exist, on la modifier avec la nouvelle valeur
+                    // du path qu'on a recupere : 
+                    $post->image->path = $path;
+                    $post->image->save();
+
+                }else{
+                    // if the post doesn't contain an image, on la cree : 
+                        // dans le cas d'utilisation de imageable
+                        // on utilise :make, ou lieu de :create
+                        $post->image()->save(Image::make([
+                            'path' => $path
+                        ]));
+                }
+                //store picture link into DB : 
+                $image = new Image([
+                    'path' => $path
+                ]);
+    
+                // liee l'image avec le Post,
+                # image() : la methode de liaison definit au niveau du Post Model
+                # $image : the variable that contain the Path of the Picture
+                $post->image()->save($image);
+            }
+
         $post->title = $request->input('title');
         $post->content = $request->input('content');
         $post->slug = Str::slug( $post->title, '-');
 
         $post->save();
+
+        // delete cache from show()
+        Cache::forget("post-show-{$post->id}");
+        // delete cache from show()
+        Cache::forget('postList');
 
         $request->session()->flash('status', 'Post Updated Success');
         return redirect(route('posts.show', ['post'=>$post->id]));

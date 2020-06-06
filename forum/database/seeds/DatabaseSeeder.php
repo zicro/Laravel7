@@ -25,8 +25,9 @@ class DatabaseSeeder extends Seeder
        // generer 1000 Comments
        // et on boucle sur chaque Comment on lui affectant un post_id
 
-       factory(App\Comment::class, 150)->make()->each(function($comment) use($posts){
+       factory(App\Comment::class, 150)->make()->each(function($comment) use($posts, $users){
            $comment->post_id = $posts->random()->id;
+           $comment->user_id = $users->random()->id;
            $comment->save();
        });
 

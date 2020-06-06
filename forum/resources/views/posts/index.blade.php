@@ -32,7 +32,13 @@
                     {{ $post->title }}
                     @endif
                 </a></h3>
-        
+            {{-- <img class="img-fluid roundred" src="{{env('APP_URL').'/storage/'}}{{$post->image->path ?? null}}" alt=""> --}}
+            {{-- <img class="img-fluid roundred" src="{{Storage::url($post->image->path ?? null)}}" alt=""> --}}
+            @if ($post->image)
+            <img class="img-fluid rounded" src="{{$post->image->url()}}" alt="">
+            @endif
+                {{-- {{$post->image->path?? ''}} --}}
+                {{-- {{env('APP_URL').'/storage'}} --}}
                 <p>{{$post->content}}</p>
 
                Tags : <x-tags :tags="$post->tags"></x-tags> <br />
@@ -46,8 +52,9 @@
                 {{$post->comments_count}} Comments   
                 @endif
                </span>
-            <x-updated :date="$post->updated_at" :name="$post->user->name"></x-updated>
+            <x-updated :date="$post->updated_at" :name="$post->user->name" :userId="$post->user_id"></x-updated>
             <br >
+            @include('comments.form', ['id' => $post->id])
         
         @auth
             @cannot('delete', $post)
@@ -56,7 +63,7 @@
         
             
             @can('update', $post)
-            <a class="btn btn-primary" href="{{ route('posts.edit', ['post' => $post->id]) }}" >edit</a>
+            <a class="btn btn-primary btn-sm" href="{{ route('posts.edit', ['post' => $post->id]) }}" >edit</a>
             @endcan
         
             @if ($post->deleted_at)
@@ -65,7 +72,7 @@
             <form style="display:inline;" action="{{url('/posts/'.$post->id.'/restore')}}" method="POST">
                 @csrf
                 @method('PATCH')
-                    <button type="submit" class="btn btn-success">
+                    <button type="submit" class="btn btn-success btn-sm">
                         restore</button>
                 </form>
             @endcan
@@ -74,7 +81,7 @@
                 <form style="display:inline;" action="{{url('/posts/'.$post->id.'/forcedelete')}}" method="POST">
                     @csrf
                     @method('DELETE')
-                        <button type="submit" class="btn btn-warning">
+                        <button type="submit" class="btn btn-warning btn-sm">
                             !Delete</button>
                     </form>
                     @endcan
@@ -84,7 +91,7 @@
             <form style="display:inline;" action="{{route('posts.destroy', ['post' => $post->id])}}" method="POST">
                 @csrf
                 @method('DELETE')
-                    <button type="submit" class="btn btn-danger">
+                    <button type="submit" class="btn btn-danger btn-sm">
                         Delete</button>
                 </form>
                 @endcan

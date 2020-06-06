@@ -10,11 +10,9 @@
     </label>
     <textarea class="form-control" name="content" id="content">{{ old('content', $post->content ?? null) }}</textarea>
 </div>
-@if ($errors->any())
-    <ul>
-        @foreach ($errors->all() as $error)
-            <li>{{$error}}</li>
-        @endforeach
-       
-    </ul>
-@endif
+<div class="form-group">
+    <label for="picture">Picture</label>
+    <input type="file" name="picture" class="form-control-file" id="picture">
+</div>
+
+<x-errors></x-errors>

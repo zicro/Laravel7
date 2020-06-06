@@ -43,6 +43,14 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    public function image(){
+        return $this->morphOne('App\Image', 'imageable');
+    }
+
+    public function comment(){
+        // chaque utilisateur peut ecrire plusieurs Posts
+        return $this->hasMany(Comment::class);
+    }
         // C'est un scoop Local qui met on ordre les users selon leur nombre
     // de posts.
     public function scopeTopUsersPost(Builder $query){

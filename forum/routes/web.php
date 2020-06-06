@@ -96,6 +96,14 @@ Route::get('/posts/tag/{id}', 'PostTagController@index')->name('posts.tag.index'
 // gennere les 7 routess pour PostController
 Route::resource('/posts', 'PostController');
 
+// gennere une seul route  pour la methode (store) dans PostCommentController
+Route::resource('posts.comments', 'PostCommentController')->only(['store']);
+
 
 //Route::get('/post/', 'PostController@index')->name('post');
 
+// Routes for UserController : 
+
+
+    // gennere les 3 routess pour UserController
+Route::resource('/users', 'UserController')->only(['show', 'edit', 'update']);

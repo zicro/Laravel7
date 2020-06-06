@@ -2,7 +2,7 @@
 
 @section('content')
 <h1>Add New Post  </h1>
-<form action="{{route('posts.store')}}" method="POST">
+<form action="{{route('posts.store')}}" method="POST" enctype="multipart/form-data">
     @csrf
     @include('posts.form')
         <button type="submit" class="btn  btn-primary btn-lg btn-block">add post</button>

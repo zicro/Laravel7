@@ -18,6 +18,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    {{-- <link href="{{ asset('css/slate.css') }}" rel="stylesheet"> --}}
     <link rel="stylesheet" href="{{ mix('/css/theme.css') }}">
 </head>
 <body>
@@ -91,11 +92,12 @@
 
    
         
-            @if (session()->has('status'))
+            {{-- @if (session()->has('status'))
             <div class="alert alert-primary" role="alert">
                  {{session()->get('status')}}
             </div>
-             @endif
+             @endif --}}
+             <x-alert></x-alert>
         
         <main class="py-4">
            

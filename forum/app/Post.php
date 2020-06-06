@@ -30,6 +30,10 @@ public function user(){
     return $this->belongsTo(User::class);
 }
 
+public function image(){
+    return $this->morphOne('App\Image', 'imageable');
+}
+
 // une Post Peuvent Contient Plusieurs Tags
 public function tags(){
     //->withTimestamps() , sert a editer les champs updated_at|created_at in DB
@@ -42,7 +46,17 @@ public function tags(){
     return $query->withCount('comments')->orderBy('comments_count', 'desc');
 }
 
+ // C'est un scoop Local qui permet de recuperer les Posts
+ // avec leur users et leurs comments ainsi que leurs Tags.
+public function scopePostWithUserCommentsTags(Builder $query){
+    return $query->withCount('comments')->with(['user', 'tags']);
+}
 
+ // C'est un scoop Local qui permet de recuperer les Posts
+ // avec leur users et leurs comments ainsi que leurs Tags et leurs image.
+ public function scopePostWithUserCommentsTagsImage(Builder $query){
+    return $query->withCount('comments')->with(['user', 'tags', 'image']);
+}
 
 
 public static function boot(){
